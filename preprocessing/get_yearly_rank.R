@@ -1,20 +1,23 @@
 library(tidyverse)
-cleaned_df <- read.csv("data/raw/global_sample.csv")
+cleaned_df <- read.csv("data/clean/daily_data_final.csv")
 
-cleaned_df <- select(cleaned_df,-c(X, URL,uri,analysis_url))
-                     
-year_rank_df <- cleaned_df %>% 
+
+year_rank_df <- cleaned_df %>%
+  filter(!is.na(track_id)) %>%
   group_by(Region, track_id) %>% 
   summarise(total_stream = sum(Streams)) %>%
-  arrange(desc(total_stream), .by_group = TRUE) %>%
   ungroup()
-  
 year_rank_df <- year_rank_df %>%
-  group_by(Region) %>% 
-  rowid_to_column("yearly_rank")%>%
+  group_by(Region) %>%
+  arrange(desc(total_stream), .by_group = TRUE) %>%
+  mutate(yearly_rank = 1:n())%>%
   slice(1:100) %>%
   ungroup()
 
-year_df <- merge(x=select(year_rank_df,-Region), y=cleaned_df, by.x="track_id", by.y="track_id")
+year_cleaned_df<- cleaned_df %>%
+  select(-c(X,Region,Date,Streams,Position))%>%
+  unique()
+  
+year_df <- left_join(year_rank_df, year_cleaned_df, by="track_id")
 
-write.csv(year_df,"data/clean/yearly.csv")
+write.csv(year_df,"data/clean/yearly_data.csv")
