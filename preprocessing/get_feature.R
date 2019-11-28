@@ -47,7 +47,7 @@ write.csv(clean_final, "/Users/nessyliu/Documents/GitHub/Edav-Final-Project/data
 
 
 main_artist_id <- c()
-for(i in 1134543:nrow(merged_df)){
+for(i in 1:nrow(merged_df)){
   main_artist = as.character(merged_df[i,"Artist"])
   index = match(main_artist, unlist(strsplit(as.character(merged_df[i,"artists"]), split = ";")))
   if(is.na(index)){
