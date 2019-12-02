@@ -1,7 +1,7 @@
 library(Rspotify)
 keys <- spotifyOAuth("EDAV","2396242d1c2043ae90fa37810b334c56","e972f10fc0384e5683be1f603b869a55")
 
-df <- read.csv("/Users/nessyliu/Documents/GitHub/Edav-Final-Project/data/raw/global.csv")
+df <- read.csv("data/raw/global.csv")
 regions <- c("gb","us","ad","ar","at","au","be","bg","bo","br",
              "ca","ch","cl","co","cr","cy","cz","de","dk",
              "do","ec","ee","es","fi","fr","gr","gt","hk",
@@ -10,7 +10,7 @@ regions <- c("gb","us","ad","ar","at","au","be","bg","bo","br",
              "no","nz","pa","pe","ph","pl","pt","py","ro",
              "se","sg","sk","sv","th","tr","tw","uy","vn","za")
 for(r in regions){
-  df <- rbind(df, read.csv(paste("/Users/nessyliu/Documents/GitHub/Edav-Final-Project/data/raw/",r,".csv", sep = "")))
+  df <- rbind(df, read.csv(paste("data/raw/",r,".csv", sep = "")))
 }
 
 clean_df <- subset(df, Position!="Position")
@@ -43,7 +43,7 @@ merged_df <- merged_df[,!names(merged_df) %in% c("URL")]
 clean_final <- merged_df
 clean_final[clean_final == ""] <- NA
 
-write.csv(clean_final, "/Users/nessyliu/Documents/GitHub/Edav-Final-Project/data/clean/daily_data.csv")
+write.csv(clean_final, "data/clean/daily_data.csv")
 
 
 main_artist_id <- c()
@@ -63,7 +63,7 @@ merged_df$Artist_ID <- main_artist_id
 clean_final_full <- merged_df
 clean_final_full[clean_final_full == ""] <- NA
 
-write.csv(clean_final_full, "/Users/nessyliu/Documents/GitHub/Edav-Final-Project/data/clean/daily_data_final.csv")
+write.csv(clean_final_full, "data/clean/daily_data_final.csv")
 
 
 

@@ -36,7 +36,7 @@ for (country in region){
 }
 
 
-
-library(igraph)
-network <- graph_from_adjacency_matrix( artist_mat, weighted=T, mode="undirected", diag=F)
-plot(network)
+# 
+# library(igraph)
+# network <- graph_from_adjacency_matrix( artist_mat, weighted=T, mode="undirected", diag=F)
+# plot(network)
