@@ -10,11 +10,13 @@ View(global_yearly_data)
 singers <- global_yearly_data %>%
   group_by(Artist) %>%
   summarise(Count = n())
+View(singers)
 top_singers <- subset(singers, Count > 1)
+View(top_singers)
 
 # draw a barchart to have an overview of top singers
 plot_ly(top_singers, x=~reorder(Artist, -Count), y=~Count, type="bar") %>%
-  layout(title = "Artists who have more than one songs on Global Top 100 from Nov.11 2018 to Oct.31 2019",
+  layout(title = "Artists who have more than one songs on Global Top 100 from Nov.1 2018 to Oct.31 2019",
          xaxis = list(title = "Artist"),
          yaxis = list(title = "Count of songs on the ranking"))
 
