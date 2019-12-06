@@ -10,7 +10,6 @@ View(global_yearly_data)
 singers <- global_yearly_data %>%
   group_by(Artist) %>%
   summarise(Count = n())
-View(singers)
 top_singers <- subset(singers, Count > 1)
 View(top_singers)
 
