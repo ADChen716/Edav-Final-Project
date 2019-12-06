@@ -133,6 +133,7 @@ plot_ly(
   )
 
 XX_tracks <- subset(std_global_yearly_data, Artist == "XXXTENTACION")
+View(XX_tracks)
 plot_ly(
   type = 'scatterpolar',
   fill = 'toself',
@@ -151,12 +152,12 @@ plot_ly(
   add_trace(
     r = c(unlist(matrix(XX_tracks[3, 1:9])), XX_tracks[3,1]),
     theta = c(unlist(feature_name), feature_name[1]),
-    name = BE_tracks[3, "Track"]
+    name = XX_tracks[3, "Track"]
   ) %>%
   add_trace(
     r = c(unlist(matrix(XX_tracks[4, 1:9])), XX_tracks[4,1]),
     theta = c(unlist(feature_name), feature_name[1]),
-    name = BE_tracks[4, "Track"]
+    name = XX_tracks[4, "Track"]
   ) %>%
   layout(
     polar = list(
