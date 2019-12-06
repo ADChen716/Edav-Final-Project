@@ -15,4 +15,7 @@ m <- cor(global_yearly_feature)
 plot_ly(x = c(unlist(feature_name), "yearly_rank"),
         y = c(unlist(feature_name), "yearly_rank"),
         z = m,
-        type = "heatmap")
+        zmin = -1,
+        zmax = 1,
+        type = "heatmap",
+        colors = colorRamp(c("navyblue", "white", "pink")))
