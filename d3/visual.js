@@ -37,7 +37,7 @@ var rowConverter = function(d) {
   }
 };
 
-d3.csv("https://raw.githubusercontent.com/ADChen716/Edav-Final-Project/master/data/clean_for_html/global.csv?token=ANL52OD6NG2XRA4ZHSKF55C553CPM",rowConverter)
+d3.csv("https://raw.githubusercontent.com/ruibai118/learn/master/global.csv",rowConverter)
 .then(function(data){draw(data)})
 .catch(function(error){alert(error)})
 
