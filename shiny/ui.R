@@ -1,5 +1,5 @@
 header <- dashboardHeader(
-    title = "HAHAHA Spotify",
+    title = "Happy Spotify",
     tags$li(a(href = '',
               img(src = 'edav_logoo.png',
                   title = "Refresh", height = "40px"),
@@ -10,19 +10,14 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
     sidebarMenu(
         id = "sidebarmenu",
-        menuItem("Intro & Data", icon = icon("music"),
-                 menuSubItem("Background & Motivation", tabName = "tab_bg"),
-                 menuSubItem("Data Sources", tabName = "tab_source"),
-                 menuSubItem("Data Transformation", tabName = "tab_trans")
-        ),
         menuItem("Missing Values", tabName = "tab_missing", icon = icon("search")),
         menuItem("Data Overview", tabName = "tab_overview", icon = icon("eye")),
         menuItem("Results & Analysis", icon = icon("chart-bar"),
-                 menuSubItem("Singer", tabName = "tab_singer"),
-                 menuSubItem("Song", tabName = "tab_song"),
-                 menuSubItem("User", tabName = "tab_user")
-        ),
-        menuItem("Conclusion", tabName = "tab_conclusion", icon = icon("book-open"))
+                 menuSubItem("Streams Trend", tabName = "tab_streams"),
+                 menuSubItem("Feature Analysis", tabName = "tab_feature"),
+                 menuSubItem("Singers Deep Dive", tabName = "tab_singer"),
+                 menuSubItem("Hey lyrics", tabName = "tab_lyrics")
+        )
     )
 )
 
@@ -30,19 +25,11 @@ body <- dashboardBody(
     shinyDashboardThemes(
         theme = "poor_mans_flatly"
     ),
+    
     tabItems(
         
-        #########################
-        ## Tab 1: Intro & Data ##
-        #########################
-        
-        ########################################
-        ## Tab 1 - 1: Background & Motivation ##
-        ########################################
-        
-        
         ############################
-        ## Tab 2: Missing pattern ##
+        ## Tab 1: Missing pattern ##
         ############################
         
         tabItem(tabName = "tab_missing",
@@ -55,13 +42,13 @@ body <- dashboardBody(
         ),
         
         ##########################
-        ## Tab 3: Data Overview ##
+        ## Tab 2: Data Overview ##
         ##########################
         
         tabItem(tabName = "tab_overview",
                 fluidRow(
                     column(width = 6,
-                           h4("Welcome, hahaha")
+                           h4("Welcome!")
                     ),
                     column(width = 6)
                 ),
@@ -99,31 +86,39 @@ body <- dashboardBody(
         
         
         ###############################
-        ## Tab 4: Results & Analysis ##
+        ## Tab 3: Results & Analysis ##
         ###############################
         
-        #######################
-        ## Tab 4 - 1: Singer ##
-        #######################
+        ##############################
+        ## Tab 3 - 1: Streams Trend ##
+        ##############################
         
-        tabItem(tabName = "tab_singer",
+        tabItem(tabName = "tab_streams",
                 fluidRow(
-                    column(width = 6,
-                           h4("From Overview of the top singers, we identified the below four singers who have more than XX songs on yearly TOP100")
-                    ),
-                    column(width = 6)
-                ),
-                fluidRow(
-                    box(title = "How his/her hottest songs sound like",status="primary",solidHeader = TRUE,
+                    box(title = "Trend of Total Daily Streams",status="primary",solidHeader = TRUE,
                         width = 12,
-                        column(width=2,
-                               radioButtons("singer_radar_input", label = "Select a Singer:", 
-                                            choices = c("Post Malone","Ed Sheeran","Billie Eilish","XXXTENTACION"),
-                                            selected = "Post Malone")),
-                        column(width=10,plotlyOutput("singer_radar", width="100%")%>% withSpinner(color="#0dc5c1")),
+                        plotlyOutput("streams_year_ts", width="100%")%>% withSpinner(color="#0dc5c1"),
+                        collapsible = T
+                    ),
+                    box(title = "Weekly Total Streams Pattern",status="primary",solidHeader = TRUE,
+                        width = 12,
+                        plotOutput("streams_weekday_ts", width="100%")%>% withSpinner(color="#0dc5c1"),
                         collapsible = T
                     )
                 ),
+                
+                fluidRow(
+                    box(title = "4 Major Popularity Trends",status="primary",solidHeader = TRUE,
+                        width = 12,
+                        column(width=2,
+                               radioButtons("type_ts_input", label = "Select a Trend:", 
+                                            choices = c("1","2","3","4"),
+                                            selected = "1")),
+                        column(width=10,plotlyOutput("type_ts", width="100%")),
+                        collapsible = T
+                    )
+                ),
+                
                 fluidRow(
                     box(title = "Their popularity as time goes by",status="primary",solidHeader = TRUE,
                         width = 12,
@@ -137,11 +132,11 @@ body <- dashboardBody(
                 )
         ),
         
-        #####################
-        ## Tab 4 - 2: Song ##
-        #####################
+        ########################
+        ## Tab 3 - 2: Feature ##
+        ########################
         
-        tabItem(tabName = "tab_song",
+        tabItem(tabName = "tab_feature",
                 fluidRow(
                     column(width = 6,
                            h4("We want to explore..... NEED TO change z name?")
@@ -156,6 +151,18 @@ body <- dashboardBody(
                     )
                 ),
                 fluidRow(
+                    box(title = "Select a song feature:",status="primary",solidHeader = TRUE,
+                        width = 12,
+                        column(width=2,
+                               radioButtons("choropleth_feature_1", label = "Select a feature:", 
+                                            choices = c("danceability","energy","loudness","speechiness",
+                                                        "acousticness","instrumentalness","liveness",
+                                                        "valence","tempo"), selected = "danceability")),
+                        column(width=10,plotlyOutput("choropleth_1", width="100%")%>% withSpinner(color="#0dc5c1")),
+                        collapsible = T
+                    )
+                ),
+                fluidRow(
                     box(title = "How the features are changing by date",status="primary",solidHeader = TRUE,
                         h3("Zoom in to see details"),
                         width = 12,
@@ -165,60 +172,88 @@ body <- dashboardBody(
                 )
         ),
         
+        #########################
+        ## Tab 4 - 3: Singer   ##
+        #########################
         
-        #######################
-        ## Tab 4 - 3: User ##
-        #######################
-        
-        tabItem(tabName = "tab_user",
+        tabItem(tabName = "tab_singer",
                 fluidRow(
-                    column(width = 6,
-                           h4("Welcome, hahaha")
-                    ),
-                    column(width = 6)
-                ),
-                fluidRow(
-                    box(title = "Select a song feature:",status="primary",solidHeader = TRUE,
+                    box(title = "How his/her hottest songs sound like",status="primary",solidHeader = TRUE,
                         width = 12,
                         column(width=2,
-                               radioButtons("choropleth_feature_1", label = "Select a feature:", 
-                               choices = c("danceability","energy","loudness","speechiness",
-                                           "acousticness","instrumentalness","liveness",
-                                           "valence","tempo"), selected = "danceability")),
-                        column(width=10,plotlyOutput("choropleth_1", width="100%")),
+                               radioButtons("singer_radar_input", label = "Select a Singer:", 
+                                            choices = c("Post Malone","Ed Sheeran","Billie Eilish","XXXTENTACION"),
+                                            selected = "Post Malone")),
+                        column(width=10,plotlyOutput("singer_radar", width="100%")%>% withSpinner(color="#0dc5c1")),
                         collapsible = T
-                    ),
-                    box(title = "Select another feature for comparison:",status="primary",solidHeader = TRUE,
-                        width = 12,
-                        column(width=2,
-                               radioButtons("choropleth_feature_2",label = "",
-                               choices = c("danceability"="danceability","energy","loudness","speechiness",
-                                           "acousticness","instrumentalness","liveness",
-                                           "valence","tempo"), selected = "valence")),
-                        column(width=10,plotlyOutput("choropleth_2", width="100%")),
-                        collapsible = T,
-                        collapsed=T
                     )
                 ),
                 fluidRow(
-                    box(title = "Trend of Total Daily Streams",status="primary",solidHeader = TRUE,
+                    box(title = "Connection of Singers",status="primary",solidHeader = TRUE,
                         width = 12,
-                        plotlyOutput("streams_year_ts", width="100%"),
-                        collapsible = T
-                    ),
-                    box(title = "Weekly Total Streams Pattern",status="primary",solidHeader = TRUE,
-                        width = 12,
-                        plotOutput("streams_weekday_ts", width="100%"),
+                        forceNetworkOutput(outputId = "graph")%>% withSpinner(color="#0dc5c1"),
                         collapsible = T
                     )
                 )
                 
+        ),
+        
+        
+        #######################
+        ## Tab 4 - 4: User   ##
+        #######################
+        
+        
+        tabItem(tabName = "tab_lyrics",
+                fluidRow(
+                    box(width=12, title="word cloud",status="primary", solidHeader = TRUE, 
+                        column(width = 4,
+                               
+                            div(style="height: 80px;",
+                                sliderInput("dan", label = "danceability", 
+                                            min = 0.24, max = 0.975, value = c(0.24, 0.975))),
+                            div(style="height: 80px;",
+                                sliderInput("ene", label = "energy", 
+                                            min = 0.0983, max = 0.992, value = c(0.0983, 0.992))),
+                            
+                            div(style="height: 80px;",
+                                sliderInput("lou", label = "loudness", 
+                                            min = -18.064, max = -0.787, value = c(-18.064, -0.787)))
+                        ),
+                        column(width = 4,
+                               div(style="height: 80px;",
+                                   sliderInput("spe", label = "speechiness", 
+                                               min = 0.0232, max = 0.556, value = c(0.0232, 0.556))),
+                               div(style="height: 80px;",
+                                   sliderInput("aco", label = "acousticness", 
+                                               min = 0, max = 0.981, value = c(0, 0.981))),
+                               div(style="height: 80px;",
+                                   sliderInput("ins", label = "instrumentalness", 
+                                               min = 0, max = 0.745, value = c(0, 0.745))),
+                        ),
+                        column(width = 4,
+                               div(style="height: 80px;",
+                                   sliderInput("liv", label = "liveness", 
+                                               min = 0.0161, max = 0.989, value = c(0.0161, 0.989))),
+                               div(style="height: 80px;",
+                                   sliderInput("val", label = "valence", 
+                                               min = 0.0605, max = 0.972, value = c(0.0605, 0.972))),
+                               div(style="height: 80px;",
+                                   sliderInput("tem", label = "tempo", 
+                                               min = 62.484, max = 215.219, value = c(62.484, 215.219)))
+                        ),
+                         
+                        collapsible = T
+                    )
+                ),
+                fluidRow(
+                    box( width=6, title="word cloud",status="primary", solidHeader = TRUE,
+                         plotOutput("word_cloud"),
+                         collapsible = T
+                    )
+                )
         )
-        
-        
     )
-    
-    
 )
 
 
