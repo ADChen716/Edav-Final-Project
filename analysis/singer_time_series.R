@@ -47,13 +47,13 @@ singer_daily_df2 <- global_daily_df[which(global_daily_df$Artist=="Billie Eilish
   complete(Date = seq.Date(min(Date), max(Date), by="day"))%>%
   ungroup()
 
-a <- list(text = "New album is out!",
+a <- list(text = "New single is out!",
           showarrow = TRUE,
           arrowhead = 1,
           x = as.Date("2019-02-01"),
           y = 5.56e6
 )
-b <- list(text = "Another album is out!",
+b <- list(text = "New album is out!",
           showarrow = TRUE,
           arrowhead = 1,
           x = as.Date("2019-03-29"),

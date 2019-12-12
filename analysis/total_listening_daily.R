@@ -2,9 +2,9 @@ library(plotly)
 library(tidyverse)
 library(lubridate)
 
-daily_df <- read.csv("/Users/ruibai/Documents/study/STAT5702EDAV/final pj/Edav-Final-Project/data/clean/daily_data_final.csv", header = T)
+daily_df <- read.csv("/Users/ruibai/Documents/study/STAT5702EDAV/finalPJ/Edav-Final-Project/data/clean/daily_data_final.csv", header = T)
 daily_df <- select(daily_df,-"X")
-yearly_df <- read.csv("//Users/ruibai/Documents/study/STAT5702EDAV/final pj/Edav-Final-Project/data/clean/yearly_data.csv", header = T)
+yearly_df <- read.csv("//Users/ruibai/Documents/study/STAT5702EDAV/finalPJ/Edav-Final-Project/data/clean/yearly_data.csv", header = T)
 yearly_df <- select(yearly_df,-"X")
 
 global_daily_df <- daily_df[daily_df$Region=="global",]
