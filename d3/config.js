@@ -65,7 +65,7 @@ const config = {
   item_x: 280,
 
   // 时间点间隔时间。
-  interval_time: 0.5,
+  interval_time: 0.8,
 
   // 上方文字水平高度。
   text_y: -50,
