@@ -142,7 +142,7 @@ global_daily_data$Track <- sub("(\\(|-).*$", "", as.character(global_daily_data$
 days_of_songs <- global_daily_data %>% 
   group_by(Track) %>% 
   distinct(Date) %>%
-  summarise(Freq = n()) %>%
+  dbplyr::summarise(Freq = n()) %>%
   arrange(-Freq) %>%
   subset(Freq > 100)
 
@@ -165,7 +165,7 @@ plot_ly(days_of_songs, x = ~Freq, y = ~reorder(Track,Freq), type = 'scatter',
 # singers who have more than one songs on the ranking
 singers <- global_yearly_data %>%
   group_by(Artist) %>%
-  summarise(Count = n())
+  dbplyr::summarise(Count = n())
 top_singers <- subset(singers, Count > 1)
 
 # draw a barchart to have an overview of top singers
@@ -187,10 +187,10 @@ plot_ly(top_singers, x=~reorder(Artist, -Count), y=~Count, type="bar") %>%
 days_of_singers <- global_daily_data %>% 
   group_by(Artist) %>% 
   distinct(Date) %>%
-  summarise(Freq = n()) %>%
+  dbplyr::summarise(Freq = n()) %>%
   arrange(-Freq) %>%
   subset(Freq > 100) %>%
-  mutate(Artist = as.character(Artist))
+  dbplyr::mutate(Artist = as.character(Artist))
 
 plot_ly(days_of_singers, x = ~Freq, y = ~reorder(Artist,Freq), type = 'scatter',
         mode = "markers", marker = list(color = "blue")) %>%
@@ -236,7 +236,7 @@ global_daily_df$Date<-  as.Date(global_daily_df$Date)
 
 global_total_daily_df <- global_daily_df %>%
   group_by(Date) %>%
-  summarize(total_listening = sum(Streams)) %>%
+  dbplyr::summarize(total_listening = sum(Streams)) %>%
   ungroup()%>%
   arrange(Date)
 
@@ -373,7 +373,7 @@ global_daily_df$Date<-  as.Date(global_daily_df$Date)
 
 daily_average_feature <- global_daily_df %>%
   group_by(Date) %>%
-  summarise(danceability = mean(danceability),
+  dbplyr::summarise(danceability = mean(danceability),
             energy = mean(energy),
             loudness = mean(loudness),
             speechiness = mean(speechiness),
@@ -389,7 +389,7 @@ daily_average_feature <- global_daily_df %>%
 daily_average_feature <- daily_average_feature %>%
   gather(key = "feature", value = value, -Date) %>%
   group_by(feature) %>%
-  mutate(rescaled_value = 100* value/value[1])
+  dbplyr::mutate(rescaled_value = 100* value/value[1])
 
 plot_ly(daily_average_feature, x = ~Date, y = ~ rescaled_value, color = ~feature, mode = 'lines') %>%
   layout(title = "Trend of tastes",
