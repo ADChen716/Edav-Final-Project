@@ -14,7 +14,7 @@ unwanted_array = list(    'Š'='S', 'š'='s', 'Ž'='Z', 'ž'='z', 'À'='A', 'Á'
                           'ö'='o', 'ø'='o', 'ù'='u', 'ú'='u', 'û'='u', 'ý'='y', 'ý'='y', 'þ'='b', 'ÿ'='y' )
 
 lyrics <- data.frame()
-for (i in 309: nrow(track)){
+for (i in 1: nrow(track)){
   trackname <- track[i, 1]
   trackname <- sub("(\\(|-).*$", "", as.character(trackname))
   trackname <- chartr(paste(names(unwanted_array), collapse=''),

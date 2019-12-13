@@ -1,4 +1,7 @@
 library(Rspotify)
+library(readr)
+library(tidyverse)
+
 keys <- spotifyOAuth("EDAV","2396242d1c2043ae90fa37810b334c56","e972f10fc0384e5683be1f603b869a55")
 
 df <- read.csv("data/raw/global.csv")

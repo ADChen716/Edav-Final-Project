@@ -37,5 +37,6 @@ plot_ly(days_of_songs, x = ~Freq, y = ~reorder(Track,Freq), type = 'scatter',
   layout(
     title = "How long are these songs staying in Global Top 100?",
     xaxis = list(title = "Number of days in Global Top 100"),
-    yaxis = list(title = "Track")
+    yaxis = list(title = "Songs")
   )
+

@@ -2,9 +2,9 @@ library(plotly)
 library(tidyverse)
 library(lubridate)
 
-daily_df <- read.csv("/Users/ruibai/Documents/study/STAT5702EDAV/finalPJ/Edav-Final-Project/data/clean/daily_data_final.csv", header = T)
+daily_df <- read.csv("data/clean/daily_data_final.csv", header = T)
 daily_df <- select(daily_df,-"X")
-yearly_df <- read.csv("//Users/ruibai/Documents/study/STAT5702EDAV/finalPJ/Edav-Final-Project/data/clean/yearly_data.csv", header = T)
+yearly_df <- read.csv("data/clean/yearly_data.csv", header = T)
 yearly_df <- select(yearly_df,-"X")
 
 global_daily_df <- daily_df[daily_df$Region=="global",]
@@ -16,36 +16,41 @@ global_total_daily_df <- global_daily_df %>%
   ungroup()%>%
   arrange(Date)
 
+line <- list(
+  type = "line",
+  line = list(color = '#ff7f0e'),
+  xref = "x",
+  yref = "y"
+)
+line[["x0"]] <- as.Date("2018-12-24")
+line[["x1"]] <- as.Date("2018-12-24")
+line[c("y0", "y1")] <- c(1.9e8,4e8)
+
+a <- list(
+  x = as.Date("2019-02-06"),
+  y = 3.5e8,
+  text = "Christmas Eve",
+  xref = "x",
+  yref = "y",
+  showarrow = FALSE
+)
+
+
 plot_ly(global_total_daily_df ,x = ~Date, y = ~total_listening, mode = 'lines') %>%
   layout(title = "Daily total listening",
          xaxis = list(title = "Date"),
-         yaxis = list (title = "Streams"))
-
-
-# plotly
-global_total_daily_df%>%
-  mutate(Weekday = wday(Date,label = TRUE)) %>%
-  group_by(Weekday) %>%
-  do(p=plot_ly(., x = ~Date, y = ~total_listening, color = ~Weekday, mode = "lines"),) %>%
-  subplot(nrows = 1, shareX = TRUE, shareY = TRUE)
-
-# group_df <- global_total_daily_df%>%
-#   mutate(Weekday = wday(Date,label = TRUE)) %>%
-#   group_by(Weekday) %>%
-#   mutate(ll = predict(loess(total_listening~Date,., span=0.1)))
-#   
-# group_df %>% p=plot_ly(., x = ~Date, y = ~total_listening, color = ~Weekday, mode = "lines")%>%
-#        add_lines(., x= ~Date, y=predict(loess(total_listening~Date, span=0.1)), line=line.fmt, n)%>%
-#   subplot(nrows = 1, shareX = TRUE, shareY = TRUE)
-
+         yaxis = list (title = "Streams"),
+         shapes = line,
+         annotations = a)
 
 # ggplot
 library(ggplot2)
 
-ggplot(global_total_daily_df, aes(Date, total_listening)) +
+ggplot(global_total_daily_df, aes(Date, total_listening/1000000)) +
   geom_line() +
   geom_smooth(method = "loess", se = FALSE, lwd = 1.5) +
-  facet_grid(.~wday(Date, label = TRUE))
+  facet_grid(.~wday(Date, label = TRUE)) +
+  xlab("Date") + ylab("Streams (million)") + theme(axis.text.x = element_text(angle = 45))
 
 
 

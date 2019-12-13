@@ -1,5 +1,7 @@
 library(tidyverse)
 library(spotifyr)
+library(readr)
+
 Sys.setenv(SPOTIFY_CLIENT_ID = '2396242d1c2043ae90fa37810b334c56')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = 'e972f10fc0384e5683be1f603b869a55')
 access_token <- get_spotify_access_token(client_id = Sys.getenv('SPOTIFY_CLIENT_ID'), client_secret = Sys.getenv('SPOTIFY_CLIENT_SECRET'))

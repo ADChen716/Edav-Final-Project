@@ -9,13 +9,21 @@ global_yearly_data <- subset(yearly_df, Region == "global")
 feature_name = c("danceability", "energy", "loudness", "speechiness", "acousticness",
                  "instrumentalness", "liveness", "valence", "tempo")
 
+lobal_yearly_data$Track.Name <- add_line_breaks(global_yearly_data$Track.Name, 20)
+
 fn <- function(x) (x-min(x)) * 100 / (max(x)-min(x))
 std_global_yearly_data <- data.frame(lapply(global_yearly_data[, feature_name], fn))
 std_global_yearly_data$Track <- global_yearly_data$Track.Name
 std_global_yearly_data$Region <- global_yearly_data$Region
 std_global_yearly_data$Artist <- global_yearly_data$Artist
-View(std_global_yearly_data)
 
+m <- list(
+  l = 50,
+  r = 250,
+  b = 100,
+  t = 100,
+  pad = 4
+)
 
 PM_tracks <- subset(std_global_yearly_data, Artist == "Post Malone")
 plot_ly(
@@ -54,6 +62,8 @@ plot_ly(
     name = PM_tracks[6, "Track"]
   ) %>%
   layout(
+    title = 'Post Malone song features',
+    autosize = F, width = 800, height = 500, margin = m,
     polar = list(
       radialaxis = list(
         visible = T,
@@ -89,12 +99,15 @@ plot_ly(
     name = ES_tracks[4, "Track"]
   ) %>%
   layout(
+    title = 'Ed Sheeran song features',
+    autosize = F, width = 800, height = 500, margin = m,
     polar = list(
       radialaxis = list(
         visible = T,
         range = c(0,100)
       )
     )
+    
   )
 
 BE_tracks <- subset(std_global_yearly_data, Artist == "Billie Eilish")
@@ -129,11 +142,15 @@ plot_ly(
         visible = T,
         range = c(0,100)
       )
-    )
+    ),
+    title = 'Billie Eilish song features',
+    autosize = F, width = 800, height = 500, margin = m
   )
 
 XX_tracks <- subset(std_global_yearly_data, Artist == "XXXTENTACION")
-View(XX_tracks)
+
+
+
 plot_ly(
   type = 'scatterpolar',
   fill = 'toself',
@@ -165,6 +182,7 @@ plot_ly(
         visible = T,
         range = c(0,100)
       )
-    )
+    ),
+    title = 'XXXTENTACION song features',
+    autosize = F, width = 800, height = 500, margin = m
   )
-

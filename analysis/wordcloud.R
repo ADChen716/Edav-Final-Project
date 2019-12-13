@@ -3,10 +3,10 @@ library(tm)
 library(wordcloud2)
 library(wordcloud)
 
-stop_words <- read.csv("/Users/nessyliu/Documents/GitHub/Edav-Final-Project/data/clean/stop_words.csv")
+stop_words <- read.csv("data/clean/stop_words.csv")
 stop_words <- as.character(stop_words$stop_word)
 
-lyrics_df <- read.csv("/Users/nessyliu/Documents/GitHub/Edav-Final-Project/data/clean/lyrics.csv")
+lyrics_df <- read.csv("data/clean/lyrics.csv")
 
 
 
