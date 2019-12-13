@@ -54,18 +54,18 @@ const config = {
 
   // 附加信息内容。
   // left label
-  itemLabel: "Top 1 song: ",
+  itemLabel: "Top 1 song:",
 
   // right label
-typeLabel: "Artist: ",
+  typeLabel: "Artist:",
 
 
   // 榜首项目信息的水平位置 。
   // Top item information horizontal location
-  item_x: 250,
+  item_x: 280,
 
   // 时间点间隔时间。
-  interval_time: 0.5,
+  interval_time: 0.8,
 
   // 上方文字水平高度。
   text_y: -50,
@@ -73,7 +73,7 @@ typeLabel: "Artist: ",
   // 右侧文字横坐标
   text_x: 1000,
   // 偏移量
-  offset: 350,
+  offset: 180,
 
   // 长度小于display_barInfo的bar将不显示barInfo。
   // Hide barInfo if bar is shorter than barInfo
@@ -154,8 +154,7 @@ typeLabel: "Artist: ",
   // 图片路径，本地图片或者网上图片。
   // 也可在imgs.js中配置。
   imgs: {
-    "条目": "http://i1.hdslb.com/bfs/face/983034448f81f45f05956d0455a86fe0639d6a36.jpg",
-    "任意名称": "path/to/img"
+
   },
 
   // 全局背景颜色

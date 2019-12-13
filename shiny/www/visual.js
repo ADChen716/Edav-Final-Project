@@ -9,6 +9,7 @@
 // import * as d3 from 'd3';
 // require("./stylesheet.css");
 
+/*
 $("#inputfile").change(function () {
   $("#inputfile").attr("hidden", true);
   var r = new FileReader();
@@ -16,13 +17,30 @@ $("#inputfile").change(function () {
   r.onload = function () {
     //读取完成后，数据保存在对象的result属性中
     var data = d3.csvParse(this.result);
+    console.log(data)
     try {
       draw(data);
     } catch (error) {
       alert(error);
     }
   };
-});
+});*/
+
+
+
+var rowConverter = function(d) {
+  return {
+    name: d.name,
+    type: d.type,
+    value: +d.value,
+    date: d.date
+  }
+};
+
+d3.csv("https://raw.githubusercontent.com/ruibai118/learn/master/global.csv",rowConverter)
+.then(function(data){draw(data)})
+.catch(function(error){alert(error)})
+
 
 function draw(data) {
   var date = [];
@@ -168,7 +186,7 @@ function draw(data) {
     .paddingInner(0.3)
     .paddingOuter(0);
 
-  const xTicks = 5;
+  const xTicks = 10;
   const xAxis = d3
     .axisBottom()
     .scale(xScale)
@@ -467,15 +485,16 @@ function draw(data) {
         .append("image")
         .attr("x", "0")
         .attr("y", "0")
-        .attr("width", "20")
-        .attr("height", "20")
+        .attr("width", "40")
+        .attr("height", "40")
         .attr("href", d => config.imgs[d.name]);
 
       barEnter
         .append("circle")
         .attr("fill-opacity", 0)
         .attr("cy", 63)
-        .attr('fill', d => "url(#" + encodeURIComponent(d.name).replace("'", "%27").replace("(", "%28").replace(")", "%29") + ")")
+        .attr("fill", "white")
+        //.attr('fill', d => "url(#" + encodeURIComponent(d.name).replace("'", "%27").replace("(", "%28").replace(")", "%29") + ")")
         .attr("stroke-width", "0px")
         .transition("a")
         .delay(500 * interval_time)
@@ -485,7 +504,7 @@ function draw(data) {
         .attr("x", -16)
         .attr("cx", -22)
         .attr("cy", 13)
-        .attr("r", 10 / 2)
+        .attr("r", 40 / 2)
         .attr("fill-opacity", 1);
     }
     barEnter

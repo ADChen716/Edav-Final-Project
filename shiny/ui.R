@@ -13,6 +13,7 @@ sidebar <- dashboardSidebar(
         menuItem("Welcome", tabName = "tab_welcome", icon = icon("star")),
         menuItem("Missing Values", tabName = "tab_missing", icon = icon("search")),
         menuItem("Data Overview", tabName = "tab_overview", icon = icon("eye")),
+        menuItem("Popularity at a Glance", tabName = "tab_dynamic", icon = icon("align-left")),
         menuItem("Results & Analysis", icon = icon("chart-bar"),
                  menuSubItem("Streams Trend", tabName = "tab_streams"),
                  menuSubItem("Feature Analysis", tabName = "tab_feature"),
@@ -63,10 +64,16 @@ body <- dashboardBody(
         tabItem(tabName = "tab_missing",
                 fluidRow(
                    box(width = 8,
-                       title = "Missing Pattern of daily ranking data: ", status="primary",solidHeader = TRUE,
+                       title = "Missing pattern of daily ranking data: ", status="primary",solidHeader = TRUE,
                        side = "right",
                        img(src = 'missing.png', width="100%")
                        )
+                ),
+                fluidRow(
+                    box(width = 8,
+                        h4("Most of the rows do not contain missing values."),
+                        h4("Refer to our report for detailed analysis.")
+                    )
                 )
         ),
         
@@ -85,20 +92,35 @@ body <- dashboardBody(
                     )
                 ),
                 fluidRow(
-                    box(title = "How long are the singers staying in Global TOP 100",status="primary",solidHeader = TRUE,
+                    box(title = "How long are the singers staying in Global Top 100",status="primary",solidHeader = TRUE,
                         width = 12,
                         column(width=12,plotlyOutput("singer_cleveland", width="100%")%>% withSpinner(color="#0dc5c1")),
                         collapsible = T
                     )
                 ),
                 fluidRow(
-                    box(title = "How long are the songs staying in Global TOP 100",status="primary",solidHeader = TRUE,
+                    box(title = "How long are the songs staying in Global Top 100",status="primary",solidHeader = TRUE,
                         width = 12,
                         column(width=12,plotlyOutput("song_cleveland", width="100%")%>% withSpinner(color="#0dc5c1")),
                         collapsible = T
                     )
                 )
         ),
+        
+        ####################
+        ## Tab X: Dynamic ##
+        ####################
+        
+        tabItem(tabName = "tab_dynamic",
+                fluidPage(
+                    box(title = "See how their popularity is changing",status="primary",solidHeader = TRUE,
+                        width = 12,
+                        htmlOutput("frame"),
+                        collapsible = T
+                    )
+                )
+                
+            ),
         
         
         ###############################
@@ -183,7 +205,7 @@ body <- dashboardBody(
         
         tabItem(tabName = "tab_singer",
                 fluidRow(
-                    box(title = "Their popularity as time goes by",status="primary",solidHeader = TRUE,
+                    box(title = "His/her popularity as time goes by",status="primary",solidHeader = TRUE,
                         width = 12,
                         column(width=2,
                                radioButtons("singer_ts_input", label = "Select a Singer:", 
@@ -205,12 +227,14 @@ body <- dashboardBody(
                     )
                 ),
                 fluidRow(
-                    box(title = "Connection of Singers",status="primary",solidHeader = TRUE,
+                    box(title = "Connection of singers in Global Top 100",status="primary",solidHeader = TRUE,
                         width = 12,
                         column(width=2, 
-                               h5("Each node represents a singer. Hover over each node to see his/her name."),
-                               h5("Singers in same clusters (attracting similar groups of Spoftify users) are in the same color."),
-                               h5("Drag each node to see its relationship with others."),
+                               h4("Each node represents a singer. Hover over each node to see his/her name."),
+                               h4(""),
+                               h4("Singers in same clusters (attracting similar groups of Spoftify users) are in the same color."),
+                               h4(""),
+                               h4("Drag each node to see its relationship with others."),
                                ),
                         column(width=10, forceNetworkOutput(outputId = "graph")%>% withSpinner(color="#0dc5c1")),
                         collapsible = T
@@ -227,7 +251,7 @@ body <- dashboardBody(
         
         tabItem(tabName = "tab_lyrics",
                 fluidRow(
-                    box(width=12, title="What are they singing about with your feature selection",status="primary", solidHeader = TRUE, 
+                    box(width=12, title="See the lyrics within your feature range selection",status="primary", solidHeader = TRUE, 
                         column(width = 4,
                                
                             div(style="height: 100px;",

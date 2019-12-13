@@ -1,15 +1,16 @@
 shinyServer(function(input, output, session) {
     
     # read data
-    daily_data <- read.csv("www/daily_data_final.csv", header = T)
-    daily_data <- select(daily_data,-"X")
     
-    global_daily_data <- daily_data[daily_data$Region=="global",]
+    choropleth_data <- read.csv("www/choropleth_cleaned.csv", header = T)
+    
+    global_daily_data <- read.csv("www/daily_global_no_id.csv")
     global_daily_data$Date<-  as.Date(global_daily_data$Date)
     
-    yearly_data <- read.csv("www/yearly_data.csv", header = T)
-    yearly_data$Track.Name <- add_line_breaks(yearly_data$Track.Name, 20)
-    global_yearly_data <- subset(yearly_data, Region == "global")
+    global_yearly_data <- read.csv("www/yearly_global_no_id.csv", header = T)
+    global_yearly_data$Track.Name <- add_line_breaks(global_yearly_data$Track.Name, 20)
+    
+    #####
     
     lyrics_df <- read.csv("www/lyrics_eng_merged.csv")
     
@@ -46,31 +47,24 @@ shinyServer(function(input, output, session) {
     })
     
     output$choropleth_1 <- renderPlotly({
-        yearly_map_df <- subset(yearly_data, Region!="global")
-        yearly_map_df$country_code <- countrycode(toupper(yearly_map_df$Region),origin = 'iso2c',destination = 'iso3c')
         
         g <- list(
             showframe = FALSE,
             showcoastlines = FALSE,
             projection = list(type = 'Mercator')
         )
-        
-        plot_df <- aggregate(yearly_map_df[, c("danceability","energy","loudness","speechiness",
-                                               "acousticness","instrumentalness","liveness" ,
-                                               "valence","tempo")], 
-                             list(yearly_map_df$country_code), mean)
-        plot_df$country_name <- countrycode(plot_df$Group.1,origin = 'iso3c',destination = 'country.name')
-        
         l <- list(color = toRGB("grey"), width = 0.5)
-        plot_geo(plot_df) %>%
+        plot_geo(choropleth_data) %>%
             add_trace(
-                z = plot_df[,c(input$choropleth_feature_1)], color = plot_df[,c(input$choropleth_feature_1)], colors = 'Blues',
-                text = ~country_name, locations = ~Group.1, marker = list(line = l)
+                z = choropleth_data[,c(input$choropleth_feature_1)], 
+                color = choropleth_data[,c(input$choropleth_feature_1)], 
+                colors = 'Blues',
+                text = ~paste("Average",input$choropleth_feature_1, "in", country_name), 
+                locations = ~Group.1, marker = list(line = l)
             ) %>%
             colorbar(title = '', tickprefix = '') %>%
             layout(
                 autosize = T,
-                title = 'Average song features by country',
                 geo = g,
                 margin = list(l=2)
             )
@@ -94,7 +88,9 @@ shinyServer(function(input, output, session) {
             plot_ly(
                 type = 'scatterpolar',
                 fill = 'toself',
-                mode = "markers"
+                mode = "markers",
+                hovertemplate = paste('value: %{r:.2f}<br>',
+                                      'feature: %{theta}')
             ) %>%
                 add_trace(
                     r = c(unlist(matrix(PM_tracks[1,1:9])), PM_tracks[1,1]),
@@ -141,7 +137,9 @@ shinyServer(function(input, output, session) {
             plot_ly(
                 type = 'scatterpolar',
                 fill = 'toself',
-                mode = "markers"
+                mode = "markers",
+                hovertemplate = paste('value: %{r:.2f}<br>',
+                                      'feature: %{theta}')
             ) %>%
                 add_trace(
                     r = c(unlist(matrix(ES_tracks[1,1:9])), ES_tracks[1,1]),
@@ -178,7 +176,9 @@ shinyServer(function(input, output, session) {
             plot_ly(
                 type = 'scatterpolar',
                 fill = 'toself',
-                mode = "markers"
+                mode = "markers",
+                hovertemplate = paste('value: %{r:.2f}<br>',
+                                      'feature: %{theta}')
             ) %>%
                 add_trace(
                     r = c(unlist(matrix(BE_tracks[1,1:9])), BE_tracks[1,1]),
@@ -215,7 +215,9 @@ shinyServer(function(input, output, session) {
             plot_ly(
                 type = 'scatterpolar',
                 fill = 'toself',
-                mode = "markers"
+                mode = "markers",
+                hovertemplate = paste('value: %{r:.2f}<br>',
+                                      'feature: %{theta}')
             ) %>%
                 add_trace(
                     r = c(unlist(matrix(XX_tracks[1,1:9])), XX_tracks[1,1]),
@@ -280,7 +282,7 @@ shinyServer(function(input, output, session) {
                 mode = "markers", marker = list(color = "blue")) %>%
             layout(
                 xaxis = list(title = "Number of days in Global Top 100"),
-                yaxis = list(title = "Track")
+                yaxis = list(title = "Song")
             )
     })
     
@@ -290,6 +292,7 @@ shinyServer(function(input, output, session) {
         if(singer_name == "Post Malone"){
             singer_daily_df <- global_daily_data[which(global_daily_data$Artist=="Post Malone"),] %>%
                 arrange(Date)%>%
+                filter(Track.Name %in% c("rockstar (feat. 21 Savage)","Sunflower - Spider-Man: Into the Spider-Verse", "Wow.","Better Now","Goodbyes (Feat. Young Thug)","Circles")) %>%
                 group_by(Track.Name) %>%
                 complete(Date = seq.Date(min(Date), max(Date), by="day"))%>%
                 ungroup()
@@ -308,7 +311,7 @@ shinyServer(function(input, output, session) {
                       y = 7.3e6
             )
             plot_ly(singer_daily_df ,x = ~Date, y = ~ Streams, color = ~Track.Name, mode = 'lines') %>%
-                layout(title = "Popularity of Post Malone",
+                layout(
                        xaxis = list(title = "Date"),
                        yaxis = list (title = "Streams"),
                        annotations = list(a,b))
@@ -316,6 +319,7 @@ shinyServer(function(input, output, session) {
         else if(singer_name == "Billie Eilish"){
             singer_daily_df2 <- global_daily_data[which(global_daily_data$Artist=="Billie Eilish"),] %>%
                 arrange(Date)%>%
+                filter(Track.Name %in% c("bad guy","when the party's over","bury a friend","wish you were gay") )%>%
                 group_by(Track.Name) %>%
                 complete(Date = seq.Date(min(Date), max(Date), by="day"))%>%
                 ungroup()
@@ -339,13 +343,14 @@ shinyServer(function(input, output, session) {
                       y = 6.25e6
             )
             plot_ly(singer_daily_df2 ,x = ~Date, y = ~ Streams, color = ~Track.Name, mode = 'lines') %>%
-                layout(title = "Popularity of Billie Eilish",
+                layout(
                        xaxis = list(title = "Date"),
                        yaxis = list (title = "Streams"),
                        annotations = list(a,b,c))
         }
         else if(singer_name=="Ed Sheeran"){
             singer_daily_df3 <- global_daily_data[which(global_daily_data$Artist=="Ed Sheeran"),] %>%
+                filter(Track.Name %in% c("I Don't Care (with Justin Bieber)", "Beautiful People (feat. Khalid)","Shape of You","Perfect"))%>%
                 arrange(Date) %>%
                 group_by(Track.Name) %>%
                 complete(Date = seq.Date(min(Date), max(Date), by="day"))%>%
@@ -365,30 +370,24 @@ shinyServer(function(input, output, session) {
             )
             
             plot_ly(singer_daily_df3 ,x = ~Date, y = ~ Streams, color = ~Track.Name, mode = 'lines') %>%
-                layout(title = "Popularity of Ed Sheeran",
+                layout(
                        xaxis = list(title = "Date"),
                        yaxis = list (title = "Streams"),
                        annotations = list(a,b))
         }
         else{
             singer_daily_df4 <- global_daily_data[which(global_daily_data$Artist=="XXXTENTACION"),] %>%
+                filter(Track.Name %in% c("SAD!", "Moonlight","Jocelyn Flores","Arms Around You (feat. Maluma & Swae Lee)"))%>%
                 arrange(Date) %>%
                 group_by(Track.Name) %>%
                 complete(Date = seq.Date(min(Date), max(Date), by="day"))%>%
                 ungroup()
             
-            a <- list(text = "New album is out!",
-                      showarrow = TRUE,
-                      arrowhead = 1,
-                      x = as.Date("2018-12-07"),
-                      y = 3.56e6
-            )
             
             plot_ly(singer_daily_df4 ,x = ~Date, y = ~ Streams, color = ~Track.Name, mode = 'lines') %>%
-                layout(title = "Popularity of XXXTENTACION",
+                layout(
                        xaxis = list(title = "Date"),
-                       yaxis = list (title = "Streams"),
-                       annotations = a)
+                       yaxis = list (title = "Streams"))
         }
         
     })
@@ -398,13 +397,20 @@ shinyServer(function(input, output, session) {
                          "instrumentalness", "liveness", "valence", "tempo")
         global_yearly_feature <- select(global_yearly_data, c(unlist(feature_name), "yearly_rank"))
         
+        
+        
         m <- cor(global_yearly_feature)
         plot_ly(x = c(unlist(feature_name), "yearly_rank"),
                 y = c(unlist(feature_name), "yearly_rank"),
                 z = m,
                 zmin = -1,
                 zmax = 1,
-                type = "heatmap")
+                type = "heatmap",
+                hovertemplate = paste('x: %{x}',
+                                      '<br>y: %{y}<br>',
+                                      'correlation: %{z}<extra></extra>'),
+                
+                )
     })
     
     output$feature_ts <- renderPlotly({
@@ -439,8 +445,7 @@ shinyServer(function(input, output, session) {
             arrange(Date)
         
         plot_ly(global_total_daily_df ,x = ~Date, y = ~total_listening, mode = 'lines') %>%
-            layout(title = "Daily total listening",
-                   xaxis = list(title = "Date"),
+            layout(xaxis = list(title = "Date"),
                    yaxis = list (title = "Streams"))
     })
     
@@ -451,10 +456,11 @@ shinyServer(function(input, output, session) {
             ungroup()%>%
             arrange(Date)
         
-        ggplot(global_total_daily_df, aes(Date, total_listening)) +
+        ggplot(global_total_daily_df, aes(Date, total_listening/1000000)) +
             geom_line() +
             geom_smooth(method = "loess", se = FALSE, lwd = 1.5) +
-            facet_grid(.~wday(Date, label = TRUE))
+            facet_grid(.~wday(Date, label = TRUE)) +
+            xlab("Date") + ylab("Streams (million)") + theme_grey(16) + theme(axis.text.x = element_text(angle = 45))
     })
     
     
@@ -526,8 +532,8 @@ shinyServer(function(input, output, session) {
         forceNetwork(Links =netword_d3$links, Nodes = netword_d3$nodes, 
                      Source = 'source', Target = 'target',
                      NodeID = 'name', Group = 'group',
-                     linkDistance = 10, fontSize = 20,
-                     opacity = 0.8, charge = -3)
+                     linkDistance = 60, fontSize = 20,
+                     opacity = 0.8, charge = -7, bounded=T)
     })
     
     output$type_ts <- renderPlotly({
@@ -537,32 +543,45 @@ shinyServer(function(input, output, session) {
         
         if(input$type_ts_input == "Falling"){
             track <- "thank u, next"
-            p1 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~Streams, type = "scatter", mode = "lines",name = ~"streams")
-            p2 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~ Position, type = "scatter", mode = "lines", name = ~"rank")%>%
-                layout(yaxis = list(autorange = "reversed"))
-            subplot(p1,p2) %>%
-                layout(title="Falling: thank u, next--Ariana Grande" )
+            p1 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~Streams, color = I('#1f77b4'), type = "scatter", mode = "lines",name = ~"streams")%>%
+                layout(yaxis = list(title = "Streams"),
+                       xaxis = list(title = "Date"))
+            p2 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~ Position, color = I('#1f77b4'), type = "scatter", mode = "lines", name = ~"rank")%>%
+                layout(yaxis = list(autorange = "reversed",title = "Rank"),
+                       xaxis = list(title = "Date"))
+            subplot(style(p1, showlegend = FALSE),style(p2, showlegend = FALSE), titleX=T, titleY = T, margin = 0.06) %>%
+                layout(title="Falling: Thank U, Next--Ariana Grande")
         }
         
         else if(input$type_ts_input == "Rising before Falling"){
             track <- "Wow."
-            p1 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~Streams, type = "scatter", mode = "lines",name = ~"streams")
-            p2 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~ Position, type = "scatter", mode = "lines", name = ~"rank")%>%
-                layout(yaxis = list(autorange = "reversed"))
-            subplot(p1,p2) %>%
-                layout(title="Rise before Fall: Wow.--Post Malone" )
+            p1 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~Streams, color = I('#1f77b4'),type = "scatter", mode = "lines",name = ~"streams")%>%
+                layout(yaxis = list(title = "Streams"),
+                       xaxis = list(title = "Date"))
+            p2 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~ Position, color = I('#1f77b4'),type = "scatter", mode = "lines", name = ~"rank")%>%
+                layout(yaxis = list(autorange = "reversed",title = "Rank"),
+                       xaxis = list(title = "Date"))
+            subplot(style(p1, showlegend = FALSE),style(p2, showlegend = FALSE), titleX=T, titleY = T, margin = 0.06) %>%
+                layout(title="Rising before Falling: Wow.--Post Malone")
         }
         
         else{
             track <- "Dance Monkey"
-            p1 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~Streams, type = "scatter", mode = "lines",name = ~"streams")
-            p2 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~ Position, type = "scatter", mode = "lines", name = ~"rank")%>%
-                layout(yaxis = list(autorange = "reversed"))
-            subplot(p1,p2) %>%
+            p1 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~Streams, color = I('#1f77b4'),type = "scatter", mode = "lines",name = ~"streams")%>%
+                layout(yaxis = list(title = "Streams"),
+                       xaxis = list(title = "Date"))
+            p2 <- plot_ly(global_top_daily_df[which(global_top_daily_df$Track.Name==track),], x = ~Date, y = ~ Position, color = I('#1f77b4'),type = "scatter", mode = "lines", name = ~"rank")%>%
+                layout(yaxis = list(autorange = "reversed",title = "Rank"),
+                       xaxis = list(title = "Date"))
+            subplot(style(p1, showlegend = FALSE),style(p2, showlegend = FALSE), titleX=T, titleY = T, margin = 0.06) %>%
                 layout(title="Rising: Dance Monkey--Tones and I" )
         }
         
 
+    })
+    
+    output$frame <- renderUI({
+        tags$iframe(src="dailyTopSong.html", height="550", width="950")
     })
     
 })
